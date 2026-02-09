@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-3">{{ form_title }}</h1>
+
+<form method="post" class="bg-white p-3 rounded border">
+  <div class="mb-3">
+    <label for="code" class="form-label">Code (ESP32 dùng)</label>
+    <input type="text" class="form-control" id="code" name="code"
+           value="{{ display.code or '' }}"
+           {% if is_edit %}readonly{% endif %}
+           required>
+  </div>
+
+  <div class="mb-3">
+    <label for="name" class="form-label">Tên hiển thị</label>
+    <input type="text" class="form-control" id="name" name="name" value="{{ display.name or '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="location" class="form-label">Vị trí</label>
+    <input type="text" class="form-control" id="location" name="location" value="{{ display.location or '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label for="product_id" class="form-label">Sản phẩm gắn với display</label>
+    <select class="form-select" id="product_id" name="product_id">
+      <option value="">-- Chưa chọn --</option>
+      {% for p in products %}
+        <option value="{{ p.id }}"
+          {% if display.product_id == p.id %}selected{% endif %}>
+          [{{ p.sku }}] {{ p.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  {% if is_edit %}
+  <div class="mb-3">
+    <label class="form-label">Trạng thái hiện tại</label>
+    <div class="form-control-plaintext">
+      Status: {{ display.status }}<br>
+      Pin: {{ display.battery_level if display.battery_level is not none else 'N/A' }}<br>
+      Signal: {{ display.signal_strength if display.signal_strength is not none else 'N/A' }}<br>
+      Last seen: {{ display.last_seen_at or 'N/A' }}<br>
+      Firmware: {{ display.firmware_version or 'N/A' }}
+    </div>
+  </div>
+  {% endif %}
+
+  <button type="submit" class="btn btn-primary">Lưu</button>
+  <a href="/admin/displays" class="btn btn-secondary">Huỷ</a>
+
+  {% if is_edit %}
+  <button formaction="/admin/displays/{{ display.id }}/delete"
+          formmethod="post"
+          class="btn btn-danger ms-2"
+          onclick="return confirm('Xoá display này? (log trạng thái cũng sẽ bị xoá)');">
+    Xoá
+  </button>
+  {% endif %}
+</form>
+{% endblock %}
