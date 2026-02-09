@@ -1,11 +1,11 @@
 # Smart E-Paper Price Tag System (Hệ thống Nhãn giá Điện tử Thông minh)
 
-> [cite_start]Đồ án Thiết kế II - Đại học Bách Khoa Hà Nội [cite: 1, 7]
+> Đồ án Thiết kế II - Đại học Bách Khoa Hà Nội 
 
-[cite_start]Hệ thống **Electronic Shelf Label (ESL)** hoàn chỉnh, cho phép cập nhật giá và thông tin sản phẩm từ xa thông qua Wi-Fi sử dụng công nghệ màn hình E-Ink tiết kiệm năng lượng[cite: 18]. [cite_start]Dự án bao gồm cả thiết kế phần cứng (ESP32 + E-Paper) và phần mềm quản lý tập trung (FastAPI + MySQL)[cite: 19].
+Hệ thống **Electronic Shelf Label (ESL)** hoàn chỉnh, cho phép cập nhật giá và thông tin sản phẩm từ xa thông qua Wi-Fi sử dụng công nghệ màn hình E-Ink tiết kiệm năng lượng. Dự án bao gồm cả thiết kế phần cứng (ESP32 + E-Paper) và phần mềm quản lý tập trung (FastAPI + MySQL).
 
 ## Nhóm tác giả
-* **GV Hướng dẫn:** ThS. [cite_start]Nguyễn Minh Đức [cite: 8]
+* **GV Hướng dẫn:** ThS. Nguyễn Minh Đức 
 * **Sinh viên thực hiện:**
     * Nguyễn Hữu Trung - 20223743
     * Bùi Hoàng Hiệp - 20223703
