@@ -1,0 +1,111 @@
+# Smart E-Paper Price Tag System (Hệ thống Nhãn giá Điện tử Thông minh)
+
+> [cite_start]Đồ án Thiết kế II - Đại học Bách Khoa Hà Nội [cite: 1, 7]
+
+[cite_start]Hệ thống **Electronic Shelf Label (ESL)** hoàn chỉnh, cho phép cập nhật giá và thông tin sản phẩm từ xa thông qua Wi-Fi sử dụng công nghệ màn hình E-Ink tiết kiệm năng lượng[cite: 18]. [cite_start]Dự án bao gồm cả thiết kế phần cứng (ESP32 + E-Paper) và phần mềm quản lý tập trung (FastAPI + MySQL)[cite: 19].
+
+## Nhóm tác giả
+* **GV Hướng dẫn:** ThS. [cite_start]Nguyễn Minh Đức [cite: 8]
+* **Sinh viên thực hiện:**
+    * Nguyễn Hữu Trung - 20223743
+    * Bùi Hoàng Hiệp - 20223703
+
+---
+
+## Tính năng chính
+
+* [cite_start]**Quản lý tập trung:** Thêm, sửa, xóa sản phẩm và quản lý danh sách thiết bị hiển thị (Display) qua giao diện Web Dashboard[cite: 149, 150].
+* [cite_start]**Cập nhật không dây:** Thiết bị Price Tag tự động cập nhật giá, tên sản phẩm qua Wi-Fi mà không cần kết nối dây[cite: 36].
+* [cite_start]**Tiết kiệm năng lượng:** Sử dụng màn hình E-Ink (giấy điện tử) chỉ tốn điện khi thay đổi nội dung, giữ nguyên hình ảnh khi ngắt nguồn[cite: 18, 74].
+* [cite_start]**Giám sát thiết bị:** Theo dõi thời gian thực dung lượng Pin, cường độ tín hiệu (RSSI) và trạng thái Online/Offline của từng nhãn giá[cite: 169].
+* [cite_start]**Hiển thị trực quan:** Hỗ trợ hiển thị tên, giá (màu đỏ nổi bật), trạng thái (Sold out), và mã vạch minh họa[cite: 327].
+
+---
+
+## Công nghệ sử dụng
+
+### [cite_start]Phần cứng (Hardware) [cite: 249]
+* **Vi điều khiển:** ESP32 (NodeMCU/DevKit) tích hợp Wi-Fi.
+* [cite_start]**Màn hình:** Waveshare 2.13inch E-Paper Display (3 màu: Đen, Trắng, Đỏ)[cite: 266].
+* **Giao tiếp:** SPI.
+
+### Phần mềm (Software)
+* **Firmware:** C++ (Arduino Framework / PlatformIO).
+    * [cite_start]Thư viện: `GxEPD2`, `Adafruit_GFX`, `ArduinoJson`, `HTTPClient`[cite: 363].
+* [cite_start]**Backend:** Python (FastAPI)[cite: 131].
+* [cite_start]**Database:** MySQL[cite: 137].
+* [cite_start]**Frontend:** HTML/CSS (Jinja2 Templates tích hợp trong FastAPI)[cite: 483].
+
+---
+
+## Sơ đồ kết nối phần cứng
+
+[cite_start]Kết nối màn hình E-Ink với ESP32 theo chuẩn SPI như sau[cite: 311]:
+
+| Chân E-Ink | Chân ESP32 (GPIO) | Chức năng |
+| :--- | :--- | :--- |
+| **BUSY** | GPIO 4 | Báo trạng thái bận |
+| **RST** | GPIO 16 | Reset màn hình |
+| **DC** | GPIO 17 | Data/Command select |
+| **CS** | GPIO 5 | Chip Select |
+| **CLK (SCK)** | GPIO 18 | Clock SPI |
+| **DIN (MOSI)**| GPIO 23 | Dữ liệu SPI |
+| **GND** | GND | Nối đất |
+| **VCC** | 3.3V | Nguồn 3.3V |
+
+---
+
+## Cài đặt và Hướng dẫn sử dụng
+
+### 1. Backend (Server)
+Yêu cầu: Python 3.8+, MySQL.
+
+1.  Clone repository:
+    ```bash
+    git clone [https://github.com/your-username/your-repo.git](https://github.com/your-username/your-repo.git)
+    ```
+2.  Cài đặt thư viện:
+    ```bash
+    pip install fastapi uvicorn mysql-connector-python python-multipart jinja2
+    ```
+3.  Cấu hình Database:
+    * Tạo database MySQL tên `epaper_price`.
+    * Cập nhật thông tin kết nối trong file `.env` hoặc `config.py`.
+    * [cite_start]Chạy script SQL để tạo bảng `products`, `displays`, `display_status_logs`[cite: 549].
+4.  Khởi chạy Server:
+    ```bash
+    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ```
+5.  [cite_start]Truy cập Admin Dashboard tại: `http://localhost:8000/admin/displays`[cite: 620].
+
+### 2. Firmware (ESP32)
+1.  Mở project bằng **Arduino IDE** hoặc **VS Code (PlatformIO)**.
+2.  [cite_start]Cấu hình thông tin mạng và Server trong code[cite: 373, 378]:
+    ```cpp
+    const char* ssid = "YOUR_WIFI_SSID";
+    const char* password = "YOUR_WIFI_PASSWORD";
+    const char* serverHost = "192.168.1.X"; // IP máy chạy Backend (LAN IP)
+    const int serverPort = 8000;
+    ```
+3.  Nạp code vào ESP32.
+
+---
+
+## API Endpoints
+
+[cite_start]Hệ thống sử dụng RESTful API để giao tiếp[cite: 202]:
+
+| Method | Endpoint | Mô tả |
+| :--- | :--- | :--- |
+| `GET` | `/display/active` | [cite_start]ESP32 lấy thông tin sản phẩm cần hiển thị[cite: 227]. |
+| `PUT` | `/display/active/status`| [cite_start]ESP32 gửi báo cáo pin, sóng, version về server[cite: 228]. |
+| `GET` | `/products` | Lấy danh sách sản phẩm (Admin). |
+| `POST` | `/products` | Thêm sản phẩm mới (Admin). |
+
+---
+
+
+## 🔮 Hướng phát triển (Future Work)
+* [cite_start]Chuyển từ cơ chế Polling (hỏi định kỳ) sang MQTT/WebSocket để tiết kiệm pin và cập nhật tức thời[cite: 649].
+* [cite_start]Tối ưu hóa chế độ Deep Sleep cho ESP32[cite: 654].
+* [cite_start]Thêm cơ chế bảo mật (Token, HTTPS) cho API[cite: 657].
