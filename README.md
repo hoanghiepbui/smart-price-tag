@@ -104,7 +104,7 @@ Hệ thống sử dụng RESTful API để giao tiếp:
 
 ---
 
-## 🔮 Hướng phát triển (Future Work)
+## Hướng phát triển (Future Work)
 * Chuyển từ cơ chế Polling (hỏi định kỳ) sang MQTT/WebSocket để tiết kiệm pin và cập nhật tức thời.
 * Tối ưu hóa chế độ Deep Sleep cho ESP32.
 * Thêm cơ chế bảo mật (Token, HTTPS) cho API.
